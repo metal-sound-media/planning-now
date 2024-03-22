@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <title>Planning</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="content-language" content="fr">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        @font-face {
+            font-family: 'Uni Sans';
+            src: url('assets/fonts/UniSansBold.woff2') format('woff2'),
+            url('assets/fonts/UniSansBold.woff2') format('woff');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        html, body {
+            font-family: 'Uni Sans', sans-serif;
+            font-size: 1vw;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+            /*color: white;*/
+        }
+
+        section {
+            height: 50vh;
+            line-height: 50vh;
+            font-size: 3em;
+            box-sizing: border-box;
+            padding: 1em;
+        }
+    </style>
+
+</head>
+<body>
+    <section id="now">Chargement du planning en cours...</section>
+    <section id="after">Chargement du planning en cours...</section>
+
+    <script type="text/javascript">
+        function sendRequest() {
+            console.log('send request');
+
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        const json = JSON.parse(xhr.responseText);
+
+                        if (json.now !== null) {
+                            document.querySelector('#now').innerText = json.now;
+                        }
+
+                        if (json.after !== null) {
+                            document.querySelector('#after').innerText = json.after;
+                        }
+                    } else {
+                        console.error('Unable to load data.', xhr);
+                    }
+                }
+            };
+            xhr.open('GET', '/planning.php');
+            xhr.send();
+        }
+
+        sendRequest();
+        setInterval(() => sendRequest(), 10000);
+    </script>
+</body>
+</html>
