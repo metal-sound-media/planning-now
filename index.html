@@ -43,6 +43,8 @@
     <section id="after">Chargement du planning en cours...</section>
 
     <script type="text/javascript">
+        const baseUrl = location.href.replace('index.html', '');
+
         function sendRequest() {
             console.log('send request');
 
@@ -53,18 +55,18 @@
                         const json = JSON.parse(xhr.responseText);
 
                         if (json.now !== null) {
-                            document.querySelector('#now').innerText = json.now;
+                            document.querySelector('#now').innerText = json.now['text'];
                         }
 
                         if (json.after !== null) {
-                            document.querySelector('#after').innerText = json.after;
+                            document.querySelector('#after').innerText = json.after['text'];
                         }
                     } else {
                         console.error('Unable to load data.', xhr);
                     }
                 }
             };
-            xhr.open('GET', '/planning.php');
+            xhr.open('GET', `${baseUrl}planning.php`);
             xhr.send();
         }
 

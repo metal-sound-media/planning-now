@@ -6,7 +6,7 @@ ini_set('date.timezone', 'Europe/Paris');
 // Open file and get content
 $content = file_get_contents('planning.csv');
 
-/** @var array<string, string> $data key: date(Y-m-d H:i), value: text to display */
+/** @var array<string, array{text: string, extra: mixed[]}> $data key: date(Y-m-d H:i), value: event's data to display */
 $data = [];
 
 // Loop on all CSV lines
@@ -23,13 +23,23 @@ foreach (explode(\PHP_EOL, $content) as $line) {
     $datetime = "$rows[0] $rows[1]";
     $text = $rows[2];
 
+    // Get the image
+    $image = $rows[3] ?? null;
+
+    // Get extra data
+    $extra = array_splice($rows, 4);
+
     // Throw an error if we've already had an event at this time
     if (true === \array_key_exists($datetime, $data)) {
         throw new \Exception("You already have an event at this time: $datetime");
     }
 
     // Store the data
-    $data[$datetime] = $text;
+    $data[$datetime] = [
+        'text' => $text,
+        'image' => $image,
+        'extra' => $extra,
+    ];
 }
 
 // Sort all event by date (ksort => key by sort) (sort order = asc)
@@ -42,7 +52,7 @@ $currentEvent = $nextEvent = null;
 $now = new \DateTime();
 
 // Loop on each event
-foreach ($data as $datetime => $eventName) {
+foreach ($data as $datetime => $eventData) {
     // Convert the current datetime to a real DateTime object
     $datetime = \DateTime::createFromFormat('Y-m-d H:i', $datetime);
 
@@ -52,7 +62,7 @@ foreach ($data as $datetime => $eventName) {
     // If we don't have a next entry, stop the loop
     if ($next === false) {
         if ($currentEvent === null) {
-            $currentEvent = $eventName;
+            $currentEvent = $eventData;
         }
 
         break;
@@ -66,7 +76,7 @@ foreach ($data as $datetime => $eventName) {
         continue;
     }
 
-    $currentEvent = $eventName;
+    $currentEvent = $eventData;
     $nextEvent = $next;
 }
 
