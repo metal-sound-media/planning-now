@@ -6,7 +6,7 @@ ini_set('date.timezone', 'Europe/Paris');
 // Open file and get content
 $content = file_get_contents('planning.csv');
 
-/** @var array<string, array{text: string, extra: mixed[]}> $data key: date(Y-m-d H:i), value: event's data to display */
+/** @var array<string, array{text: string, image: string, extra: mixed[]}> $data key: date(Y-m-d H:i), value: event's data to display */
 $data = [];
 
 // Loop on all CSV lines
